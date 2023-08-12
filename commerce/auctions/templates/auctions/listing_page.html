@@ -1,0 +1,129 @@
+{% extends "auctions/layout.html" %}
+
+{% block body %}
+{% if message %}
+<div class="alert alert-success alert-dismissible fade show" role="alert">
+  <strong>Hey {{user.username}}</strong>{{message}}
+  <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+    <span aria-hidden="true">&times;</span>
+  </button>
+</div>
+{% endif %}
+<h2>listings : {{list.title}}</h2>
+{% if  not list.is_close and user == list.b.user %}
+   <h3>auction for this list has been ended and won</h3>
+   
+{% endif %}
+
+{% if list.owner == user and not list.is_close %}
+ <div>
+    <form class="form-group">
+
+      <a href="{% url 'closea' list.id %}" type="submit" role="button" class="btn btn-success">close auction<a>
+    </form>
+  </div>
+{% endif %}
+<div class="col-md-6">
+  <div class="row no-gutters border rounded overflow-hidden flex-md-row mb-4 shadow-sm h-md-250 position-relative">
+    <div class="col p-4 d-flex flex-column position-static">
+      {% if user.is_authenticated %}
+      <div>
+        <form class="form-group">
+
+          <a href="{% url 'add' list.id %}" type="submit" role="button" class="btn btn-secondary">watchlist<a>
+        </form>
+      </div>
+      {% else %}
+      <div>
+        <form class="form-group">
+
+          <a href="{% url 'login' %}" type="submit" role="button" class="btn btn-primary">login_for_watchlist<a>
+        </form>
+      </div>
+      {% endif %}
+
+      {% comment %} <h3 class="mb-0">{{list.title}}</h3> {% endcomment %}
+      <strong class="d-inline-block mb-2 ">{{list.desc}}</strong>
+      <div class="mb-1 text-muted">Nov 12</div>
+      <div class="mb-1 text-muted">price: <b>${{list.price.bid}}</b></div>
+      <p class="card-text mb-auto">This is a wider card with supporting text below as a natural lead-in to additional
+        content.</p>
+      <br>
+      <b>enter your value for bid:</b>
+      {% if user.is_authenticated  %}
+      <div>
+        <form action="{% url 'newbid' list.id%}" method="post">
+          {% csrf_token %}
+          <div class="form-group">
+            <label for="bid"></label>
+            <input type="number" class="form-control" id="bid" name="bid" placeholder="enter your value">
+          </div>
+
+          <button type="submit" class="btn btn-success">place bid</button>
+        </form>
+      </div>
+      {% else %}
+      <div>
+        <form class="form-group">
+
+          <a href="{% url 'login' %}" type="submit" role="button" class="btn btn-primary">Login_to_place_bid<a>
+        </form>
+      </div>
+      {% endif %}
+      <div>
+        <h4>Detailes</h4>
+        <ul>
+          <li>listed by: {{list.owner}}</li>
+        </ul>
+      </div>
+      
+      {% comment %} <a href="{% url 'display' list.id%}" class="stretched-link">move to listing</a> {% endcomment %}
+    </div>
+    <div class="col-auto d-none d-lg-block">
+      <img class="bd-placeholder-img" width="300" height="250" src="{{list.url}}" preserveAspectRatio="xMidYMid slice"
+        focusable="false" role="img">
+    </div>
+  </div>
+  <div>
+    <h4 >comments:</h4>
+    <hr>
+    <div class="m-2">
+
+      <form method="post" action="{% url 'addcomments' list.id %}">
+        {% csrf_token %}
+          <label for="comment" class="form-label">Post comment</label>
+          <input type="text" class="form-control" id="comment" aria-describedby="emailHelp" name="comment"
+            placeholder="enter comment here">
+
+        </div>
+        {% comment %} <input type="hidden" id="postSno" name="postSno" value="1"> {% endcomment %}
+        <button type="submit" class="btn btn-success">Post comment</button>
+      </form>
+
+
+    </div>
+    <div>
+      
+      
+        {% for comment in comments %}
+        <div class="row my-3">
+          <div class="col-md-1">
+            <img src="/static/images/user.png" alt="" width="42px">
+          </div>
+          <div class="col-md-11 ">
+            <b> {{comment.writer}} </b> <span class="badge badge-secondary"> 4&nbsp;days, 2&nbsp;hours ago</span>
+            <div>
+              {{comment.text}}
+            </div>
+          </div>
+
+        </div>
+        <hr>
+        {% endfor %}
+   </div>
+  </div>
+</div>
+
+
+
+{% endblock %}

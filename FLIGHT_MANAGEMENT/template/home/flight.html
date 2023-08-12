@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+{% block body %}
+<h1> Flights: {{flight.id}} </h1>
+<ul class="list-unstyled mx-4" style="width:50%">
+    
+    <li class="list-group-item list-group-item-primary my-3">Origin : {{flight.origin}}<li>
+    <li class="list-group-item list-group-item-primary my-3">Destination : {{flight.destination}}<li>
+    <li class="list-group-item list-group-item-primary my-3">Destination : {{flight.duration}}<li>
+    
+</ul>
+<h2>Passengers :</h2>
+<ul class="list-unstyled fluid mx-4" style="width:50%;">
+    {% for passenger in passengers %}
+       <li class="list-unstyled list-group-item list-group-item-primary my-3">{{passenger}}<li>
+    {% empty %}
+       <li class="list-group-item list-group-item-primary my-3">No passenger.<li>
+    {% endfor %}
+</ul>
+<a href="{% url 'index' %}" role="button" class="btn btn-primary mx-4">All flights</a>
+<h2>Add Passenger : <h2>
+<div class="mx-0">
+
+<form action="{% url 'book' flight.id %}" method="post" class="m-4">
+    {% csrf_token %}
+    <div class="form-group">
+    <select name="passenger" id="" class="form-control " style="width:50%;">
+        {% for passenger in non_passengers %}
+            <option value="{{ passenger.id }}">{{ passenger }}</option>
+        {% endfor %}
+    </select>
+    </div>
+    <button type="submit" class="btn btn-primary">Submit</button>
+</form>
+</div>
+{% endblock body %}

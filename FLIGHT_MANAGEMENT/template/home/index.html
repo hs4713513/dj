@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+{% block body %}
+ 
+<h1> Flights: </h1>
+<ul style="width:50%;">
+    {% for flight in flights %}
+    <li class="list-group-item list-group-item-primary my-3" ><a href="{% url 'flight' flight.id %}">Flight {{flight.id|safe}}: {{flight.origin|safe}} to {{flight.destination|safe}}</a></li>
+    {% endfor %}
+ </ul>
+ <a href="{% url 'logout' %}" role="button" class="btn btn-primary mx-5 my-5">logout</a>
+  
+{% endblock body %}

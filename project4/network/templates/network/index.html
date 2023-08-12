@@ -1,0 +1,96 @@
+{% extends "network/layout.html" %}
+{% load static %}
+
+{% block body %}
+
+
+<div class="p-3">
+  <h3>All Posts</h3>
+  <div class="border border-secondary rounded p-3">
+    <h6>New Post</h6>
+    <form action="{% url 'index' %}" method="post">
+      {% csrf_token %}
+
+      <hr>
+      <textarea name="content" id="content" cols="30" rows="2" class="form-control mb-2s"></textarea><br>
+      <button type="submit" class="btn btn-primary">post</button>
+    </form>
+  </div>
+  <div>
+    {% for post in posts %}
+
+    <div class="card flex-md-row mb-4 box-shadow h-md-250 mt-3  border border-primary ">
+      <div class="card-body d-flex flex-column align-items-start">
+        <strong class="d-inline-block mb-2 text-black">{{post.title}}</strong>
+        {% if post.title.id == user.id %}
+          <div class="d-inline-block mb-2 text-primary" id="edit" onclick="edit('{{post.id}}')">Edit!</div>
+        {% endif %}
+
+        <p class="card-text mb-auto" id="post-{{post.id}}">{{post.content}}</p>
+        
+          <textarea id="editt-{{post.id}}" name="edit-box" cols="30" rows="2" class="form-control mb-2s"
+            style="display:none;">{{post.content}}</textarea><br>
+          <button id="editb-{{post.id}}" class="btn btn-primary" style="display:none;">save</button><br>
+          <span><img src="static/heart.png" width="30px" alt="" id="like-btn-{{post.id}}" onclick="like('{{post.id}}')" ><span id="cnt-{{post.id}}">{{post.likes}}</span></span>
+
+        <div class="mb-1 text-muted">{{post.timestamp}}</div>
+        
+        
+
+
+        <span>Comment</span>
+      </div>
+
+    </div>
+
+    {% endfor %}
+  </div>
+</div>
+{% block script %}
+<script>
+  function edit(id)
+  {
+      var editbox=document.querySelector(`#editt-${id}`);
+      
+      var editbtn=document.querySelector(`#editb-${id}`);
+      
+      editbox.style.display='block';
+      editbtn.style.display='block';
+      
+
+      editbtn.addEventListener('click',()=>{
+          fetch('/edit/'+id,{
+              method:'PUT',
+              body:JSON.stringify({
+                  post:editbox.value
+              })
+          });
+          editbox.style.display='none';
+          editbtn.style.display='none';
+          document.querySelector(`#post-${id}`).innerHTML=editbox.value;
+      });
+  
+  
+  }
+function like(id){
+  var cnt=document.querySelector(`#cnt-${id}`);
+  var likebtn=document.querySelector(`#like-btn-${id}`);
+  
+    fetch('/like/'+id,{
+      method:'PUT',
+      body:JSON.stringify({
+        like:true
+      })
+    });
+    likebtn.style.backgroundColor='red';
+    fetch('/like/'+id).then(response => response.json()).then(p => {
+      cnt.innerHTML=p.likes;
+      likebtn.style.backgroundColor='white';
+    });
+    return true
+  
+}
+  </script>
+{% endblock script %}
+
+{% endblock %}
